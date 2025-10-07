@@ -1,0 +1,92 @@
+{
+  "name": "kalenderqu-shalat",
+  "displayName": "KalenderQu - Jadwal Shalat",
+  "description": "Plugin VSCode untuk menampilkan notifikasi saat waktu adzan tiba oleh KalenderQu.",
+  "version": "1.0.0",
+  "publisher": "KalenderQu",
+  "icon": "media/image/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pujanggabageur/kalenderqu-shalat-vscode"
+  },
+  "engines": {
+    "vscode": "^1.104.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Adzan Reminder",
+      "properties": {
+        "kalenderqu_adzan.city": {
+          "type": "string",
+          "default": "KOTA BANDUNG",
+          "description": "Nama kota untuk jadwal ahalat"
+        },
+        "kalenderqu_adzan.lat": {
+          "type": "number",
+          "default": -6.9128,
+          "description": "Lintang kota yang dipilih"
+        },
+        "kalenderqu_adzan.lon": {
+          "type": "number",
+          "default": 107.6206,
+          "description": "Bujur kota yang dipilih"
+        },
+        "kalenderqu_adzan.tz": {
+          "type": "number",
+          "default": 7,
+          "description": "Zona waktu kota yang dipilih (contoh: 7 untuk GMT+7)"
+        },
+        "kalenderqu_adzan.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Aktifkan atau nonaktifkan pengingat adzan"
+        },
+        "kalenderqu_adzan.playSound": {
+          "type": "boolean",
+          "default": true,
+          "description": "Putar suara adzan pendek saat waktu shalat tiba"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "kalenderqu.openCitySelector",
+        "title": "KalenderQu: Jadwal Shalat"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "files": [
+    "out",
+    "media/view",
+    "media/data",
+    "media/audio",
+    "media/image",
+    "media/data/**",
+    "media/view/**",
+    "media/audio/**",
+    "media/image/**",
+    "README.md"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
