@@ -191,7 +191,7 @@ function startAdzanWatcher(context: vscode.ExtensionContext) {
 
       // Jika dalam rentang 0–59 detik setelah masuk waktu
       if (selisih >= 0 && selisih < 60000) {
-        vscode.window.showInformationMessage(`🕋 Waktu ${capitalize(key)} telah tiba.`);
+        vscode.window.showInformationMessage(`🕋 Waktu ${capitalize(key)} telah tiba. Hentikan sementara aktivitas duniawi Anda.`);
         
         if (playSound && soundPanel) {
           soundPanel.webview.postMessage({ command: 'playAdzan' });

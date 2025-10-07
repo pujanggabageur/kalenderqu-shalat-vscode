@@ -48,6 +48,9 @@ Buka `Settings` → ketik **KalenderQu Adzan**, atau edit langsung di `settings.
 }
 ```
 
+## 🧩 Catatan Tambahan
+Exkstensi ini tidak menggunakan koneksi internet untuk mengambil data jadwal shalat atupun kalender Hijriah. Alih-alih menggunakan API pihak ketiga, kami membuat perhitungan otomatis sendiri untuk keperluan jadwal shalat, kalender Hijriyah, dan daftar kota.
+
 ## Situs Web
 [KalenderQu.Com]([kalenderqu-url])
 
