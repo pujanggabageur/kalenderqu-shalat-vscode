@@ -31,4 +31,9 @@ Kunjungi: [https://kalenderqu.com](https://kalenderqu.com)
 
 ---
 
+## [1.0.1] — 2025-10-07
+- Perubahan dan perbaikan pada halaman utama
+- Perubahan deskripsi
+- Perubahan nama pada Setting
+
 **© 2025 KalenderQu.com — Dirancang oleh Agung Novian**

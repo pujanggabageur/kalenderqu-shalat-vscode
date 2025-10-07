@@ -768,6 +768,7 @@ class Islam {
       ashar: roundTime(tASHAR),
       maghrib: roundTime(tMAGHRIB),
       isya: roundTime(tISYA),
+      // isya: '21:41:00',
     };
     return result;
   }

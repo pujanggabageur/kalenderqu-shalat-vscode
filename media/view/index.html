@@ -65,11 +65,17 @@
     </style>
   </head>
   <body>
-    <h2 id="pageTitle">Jadwal Shalat</h2>
+    <h2 id="pageTitle">KalenderQu - Jadwal Shalat</h2>
+    <audio id="adzanPlayer" src="${soundUri}" preload="auto"></audio>
+    <button id="playBtn">🔊 Tes Suara Adzan</button>
     <p>
-      Hasil ini dibuat berdasarkan metode perhitungan astronomis, dengan sudut matahari untuk Shubuh 20° dan sudut matahari untuk Isya 18°, dengan ketinggian matahari 10°, serta disertai penambahan ihtiyat 4 menit untuk Dzuhur dan 2 menit untuk waktu shalat lainnya
+      Hasil ini dibuat berdasarkan metode perhitungan astronomis,
+      dengan sudut matahari untuk Shubuh 20° dan sudut matahari untuk Isya 18°,
+      dengan ketinggian matahari 10°,
+      disertai penambahan ihtiyat 4 menit untuk Dzuhur dan 2 menit untuk waktu shalat lainnya.
     </p>
     <div id="citySelector" style="display: block;">
+      <label for="cityInput">Nama Kota</label>
       <input type="text" id="cityInput" placeholder="Ketik nama kota atau kabupaten..." />
       <div class="city-list" id="cityList"></div>
     </div>
@@ -91,10 +97,8 @@
         </tbody>
       </table>
     </div>
-    </div>
 
     <div id="jadwalContainer" style="display: none;">
-      <h3 id="cityName"></h3>
       <table>
         <tbody id="jadwalTable"></tbody>
       </table>
@@ -112,6 +116,11 @@
       let allCities = [];
       const currentCity = "${currentCity}";
 
+      const adzanPlayer = document.getElementById('adzanPlayer');
+      const btnPlay = document.getElementById('playBtn');
+      const input = document.getElementById('cityInput');
+      const list = document.getElementById('cityList');
+
       vscode.postMessage({ command: 'loadCities' });
       if (currentCity) vscode.postMessage({ command: 'loadSavedCity', city: currentCity });
 
@@ -127,11 +136,17 @@
           case 'showDates':
             showDate(message.dates);
             break;
+          case 'playAdzan':
+            adzanPlayer.currentTime = 0;
+            adzanPlayer.play();
+            break;
         }
       });
 
-      const input = document.getElementById('cityInput');
-      const list = document.getElementById('cityList');
+      btnPlay.onclick = () => {
+        adzanPlayer.play();
+        btnPlay.textContent = '✅ Suara Aktif';
+      };
 
       if (input) {
         input.addEventListener('input', () => {
@@ -154,7 +169,7 @@
       }
 
       function showJadwal(imsakiyah, city) {
-        document.getElementById('pageTitle').textContent = 'Jadwal Shalat';
+        // document.getElementById('pageTitle').textContent = 'KalenderQu - Jadwal Shalat';
         document.getElementById('citySelector').style.display = 'none';
         document.getElementById('jadwalContainer').style.display = 'block';
         document.getElementById('cityName').textContent = city;
@@ -174,7 +189,7 @@
       }
 
       document.getElementById('ubahKotaBtn').onclick = () => {
-        document.getElementById('pageTitle').textContent = 'Pilih Kota untuk Jadwal Adzan';
+        // document.getElementById('pageTitle').textContent = 'Pilih Kota untuk Jadwal Adzan';
         document.getElementById('citySelector').style.display = 'block';
         document.getElementById('jadwalContainer').style.display = 'none';
       };
