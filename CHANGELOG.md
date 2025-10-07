@@ -31,4 +31,4 @@ Kunjungi: [https://kalenderqu.com](https://kalenderqu.com)
 
 ---
 
-**© 2025 KalenderQu.com — Dirancang oleh Novian Agung**
+**© 2025 KalenderQu.com — Dirancang oleh Agung Novian**

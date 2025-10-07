@@ -66,6 +66,9 @@
   </head>
   <body>
     <h2 id="pageTitle">Jadwal Shalat</h2>
+    <p>
+      Hasil ini dibuat berdasarkan metode perhitungan astronomis, dengan sudut matahari untuk Shubuh 20° dan sudut matahari untuk Isya 18°, dengan ketinggian matahari 10°, serta disertai penambahan ihtiyat 4 menit untuk Dzuhur dan 2 menit untuk waktu shalat lainnya
+    </p>
     <div id="citySelector" style="display: block;">
       <input type="text" id="cityInput" placeholder="Ketik nama kota atau kabupaten..." />
       <div class="city-list" id="cityList"></div>
@@ -160,7 +163,7 @@
         for (const [key, value] of Object.entries(imsakiyah)) {
           const tr = document.createElement('tr');
           const waktu = key.charAt(0).toUpperCase() + key.slice(1);
-          tr.innerHTML = '<td>' + waktu + '</td><td>' + value + '</td>';
+          tr.innerHTML = '<td>' + waktu + '</td width="50%"><td>' + value + '</td>';
           tbody.appendChild(tr);
         }
       }
