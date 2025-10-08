@@ -6,7 +6,13 @@ import Islam from "./islam";
 // Buat instance class Islam
 const islam = new Islam();
 let notificationTimer: NodeJS.Timeout | null = null;
+let prayerTimer: NodeJS.Timeout | null = null;
 let mainPanel: vscode.WebviewPanel | null = null;
+let imsakiyah: any = null;
+let savedLat: number = 0;
+let savedLon: number = 0;
+let savedTz: number = 0;
+let savedHisab: string = '';
 
 const formatMasehi = (masehiDate: string) => {
   const months = [
@@ -68,12 +74,13 @@ function getAudioPlayerHTML(context: vscode.ExtensionContext, webview: vscode.We
 }
 */
 
-function getWebviewContent(context: vscode.ExtensionContext, currentCity: string, soundUri: any): string {
+function getWebviewContent(context: vscode.ExtensionContext, currentCity: string, soundUri: any, currentHisab: string): string {
   const htmlPath = path.join(context.extensionPath, 'media', 'view', 'index.html');
   let html = fs.readFileSync(htmlPath, 'utf8');
   // Sisipkan variabel dinamis (misalnya nama kota)
   html = html.replace(/\$\{currentCity\}/g, currentCity || '');
   html = html.replace(/\$\{soundUri\}/g, soundUri.toString());
+  html = html.replace(/\$\{currentHisab\}/g, currentHisab || 'umum');
   return html;
 }
 
@@ -97,8 +104,9 @@ function createMainPanel(context: vscode.ExtensionContext) {
   const soundUri = panel.webview.asWebviewUri(soundPath);
   const config = vscode.workspace.getConfiguration('kalenderqu_adzan');
   const currentCity = config.get<string>('city') || '';
+  const currentHisab = config.get<string>('hisab') || '';
   const dataPath = path.join(context.extensionPath, 'media', 'data', 'indonesia');
-  panel.webview.html = getWebviewContent(context, currentCity, soundUri);
+  panel.webview.html = getWebviewContent(context, currentCity, soundUri, currentHisab);
   panel.webview.onDidReceiveMessage(async (message) => {
     switch (message.command) {
       case 'loadCities': {
@@ -113,25 +121,35 @@ function createMainPanel(context: vscode.ExtensionContext) {
         await config.update('lat', Number(selected.lat), vscode.ConfigurationTarget.Global);
         await config.update('lon', Number(selected.lon), vscode.ConfigurationTarget.Global);
         await config.update('tz', Number(selected.tz), vscode.ConfigurationTarget.Global);
+        savedHisab = config.get<string>('hisab') ?? 'umum';
         vscode.window.showInformationMessage(`Kota disimpan: ${selected.name}`);
         const year = new Date().getFullYear();
         const month = new Date().getMonth() + 1;
         const day = new Date().getDate();
-        const imsakiyah = islam.Imsakiyah(year, month, day, selected.lat, selected.lon, selected.tz);
+
+        savedLat = selected.lat || 0;
+        savedLon = selected.lon || 0;
+        savedTz = selected.tz || 0;
+
+        imsakiyah = islam.Imsakiyah(year, month, day, selected.lat, selected.lon, selected.tz, savedHisab);
         panel.webview.postMessage({ command: 'showTimes', imsakiyah, city: selected.name });
+
+        startAdzanWatcher();
+        prayerWatcher();
         break;
       }
       case 'loadSavedCity': {
         const cityName = message.city;
-        const lat = config.get<number>('lat');
-        const lon = config.get<number>('lon');
-        const tz = config.get<number>('tz');
-        if (cityName && lat && lon && tz) {
+        savedLat = config.get<number>('lat') ?? 0;
+        savedLon = config.get<number>('lon') ?? 0;
+        savedTz = config.get<number>('tz') ?? 0;
+        savedHisab = config.get<string>('hisab') ?? 'umum';
+        if (cityName && savedLat && savedLon && savedTz) {
           const year = new Date().getFullYear();
           const month = new Date().getMonth() + 1;
           const day = new Date().getDate()
 
-          const imsakiyah = islam.Imsakiyah(year, month, day, lat, lon, tz);
+          imsakiyah = islam.Imsakiyah(year, month, day, savedLat, savedLon, savedTz, savedHisab);
           panel.webview.postMessage({ command: 'showTimes', imsakiyah, city: cityName });
           const masehiDate = new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' }).split(' ')[0];
 
@@ -146,73 +164,129 @@ function createMainPanel(context: vscode.ExtensionContext) {
         }
         break;
       }
+      case 'changeHisab': {
+        savedHisab = message.hisab;
+        await config.update('hisab', savedHisab, vscode.ConfigurationTarget.Global);
+        const cityName = config.get<string>('city') ?? '';
+        savedLat = config.get<number>('lat') ?? 0;
+        savedLon = config.get<number>('lon') ?? 0;
+        savedTz = config.get<number>('tz') ?? 0;
+
+        if (cityName && savedLat && savedLon && savedTz) {
+          const year = new Date().getFullYear();
+          const month = new Date().getMonth() + 1;
+          const day = new Date().getDate()
+
+          imsakiyah = islam.Imsakiyah(year, month, day, savedLat, savedLon, savedTz, savedHisab);
+          panel.webview.postMessage({ command: 'showTimes', imsakiyah, city: cityName });
+          const masehiDate = new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' }).split(' ')[0];
+
+          const hijriDate = islam.MasehiToHijri(year, month, day);
+          const dates = {
+            'masehi': formatMasehi(masehiDate),
+            'hijriyah': formatHijriyah(hijriDate),
+          };
+          panel.webview.postMessage({ command: 'showDates', dates });
+
+          startAdzanWatcher();
+          prayerWatcher();
+        } else {
+          panel.webview.postMessage({ command: 'showCities', cities: await loadAllCities(dataPath) });
+        }
+        break;
+      }
     }
   });
   return panel;
 }
 
-function startAdzanWatcher(context: vscode.ExtensionContext) {
-  const config = vscode.workspace.getConfiguration('kalenderqu_adzan');
-  const lat = config.get<number>('lat');
-  const lon = config.get<number>('lon');
-  const tz = config.get<number>('tz') ?? 7;
-  const city = config.get<string>('city') || '';
-  const playSound = config.get<boolean>('playSound') ?? true;
+function checkNearestPrayer() {
+  const now = new Date();
+  let nearestPrayer = '';
+  let nearestDiff = Infinity;
+  let diffMinutes = 0;
+  for (const [key, time] of Object.entries(imsakiyah)) {
+    if (!time) continue;
+    // @ts-ignore
+    const [h, m] = time.split(':').map(Number);
 
-  if (!lat || !lon) {
-    console.log('❗ Belum ada kota tersimpan, notifikasi adzan tidak dijalankan.');
-    return;
+    const waktu = new Date(now);
+    waktu.setHours(h, m, 0, 0);
+    const diff = waktu.getTime() - now.getTime(); // waktu shalat - waktu sekarang
+    if (diff >= 0 && diff < nearestDiff) {
+      nearestDiff = diff;
+      nearestPrayer = key;
+    }
   }
 
-  if (notificationTimer) clearInterval(notificationTimer);
+  if (nearestPrayer) {
+    diffMinutes = Math.round(nearestDiff / 60);
+  }
 
-  vscode.window.showInformationMessage(`🕌 Notifikasi adzan aktif untuk wilayah ${city}`);
+  return {
+    diff: diffMinutes,
+    prayer: nearestPrayer,
+  }
+}
 
-  // buat panel tersembunyi untuk memutar audio
-  /*
-  soundPanel = vscode.window.createWebviewPanel(
-    'kalenderquAdzanSound',
-    'Adzan Player',
-    { preserveFocus: true, viewColumn: vscode.ViewColumn.Two },
-    { enableScripts: true }
-  );
-  soundPanel.webview.html = getAudioPlayerHTML(context, soundPanel.webview, playSound);
-  */
-
-  mainPanel = createMainPanel(context);
-
-  notificationTimer = setInterval(() => {
-    const now = new Date();
-    const year = new Date().getFullYear();
-    const month = new Date().getMonth() + 1;
-    const day = new Date().getDate();
-
-    const imsakiyah = islam.Imsakiyah(year, month, day, lat, lon, tz);
-    if (!imsakiyah) return;
-
-    for (const [key, time] of Object.entries(imsakiyah)) {
-      if (!time) continue;
+function startAdzanWatcher() {
+  const config = vscode.workspace.getConfiguration('kalenderqu_adzan');
+  const playSound = config.get<boolean>('playSound') ?? true;
+  const { diff, prayer } = checkNearestPrayer();
+  console.log('diff', diff);
+  if (diff > 0 && diff <= 1500) {
+    if (notificationTimer) clearInterval(notificationTimer);
+    notificationTimer = setInterval(() => {
+      console.log('startAdzanWatcher');
+      const now = new Date();
+      const time = imsakiyah[prayer];
       const [h, m] = time.split(':').map(Number);
       const waktu = new Date(now);
       waktu.setHours(h, m, 0, 0);
+      const selisih = waktu.getTime() - now.getTime(); // dalam milidetik
 
-      const selisih = now.getTime() - waktu.getTime();
-
-      // Jika dalam rentang 0–59 detik setelah masuk waktu
-      if (selisih >= 0 && selisih < 60000) {
-        vscode.window.showInformationMessage(`🕋 Waktu ${capitalize(key)} telah tiba. Hentikan sementara aktivitas duniawi Anda.`);
+      if (selisih >= 0 && selisih <= 5000) {
+        vscode.window.showInformationMessage(
+            `🕋 Waktu ${capitalize(prayer)} telah tiba. Hentikan sementara aktivitas duniawi Anda.`
+        );
         if (playSound && mainPanel) {
           mainPanel.webview.postMessage({ command: 'playAdzan' });
         }
+        if (notificationTimer) clearInterval(notificationTimer);
       }
-    }
+    }, 1000);
+  }
+}
+
+function prayerWatcher() {
+  if (prayerTimer) clearInterval(prayerTimer);
+  prayerTimer = setInterval(() => {
+    console.log('prayerWatcher');
+    startAdzanWatcher();
   }, 60000); // cek setiap 1 menit
 }
 
 export function activate(context: vscode.ExtensionContext) {
+  const config = vscode.workspace.getConfiguration('kalenderqu_adzan');
+  savedLat = config.get<number>('lat') ?? 0;
+  savedLon = config.get<number>('lon') ?? 0;
+  savedTz = config.get<number>('tz') ?? 7;
+  const city = config.get<string>('city') || '';
+  savedHisab = config.get<string>('hisab') || 'umum';
+
   const year = new Date().getFullYear();
+  const month = new Date().getMonth() + 1;
+  const day = new Date().getDate();
+
   islam.Hisab(year);
-  startAdzanWatcher(context);
+  imsakiyah = islam.Imsakiyah(year, month, day, savedLat, savedLon, savedTz, savedHisab);
+
+  mainPanel = createMainPanel(context);
+
+  startAdzanWatcher();
+  prayerWatcher();
+
+  vscode.window.showInformationMessage(`🕌 Notifikasi adzan aktif untuk wilayah ${city}`);
 
   const disposable = vscode.commands.registerCommand('kalenderqu.openCitySelector', () => {
     createMainPanel(context);

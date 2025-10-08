@@ -1,8 +1,8 @@
 {
   "name": "kalenderqu-shalat",
   "displayName": "KalenderQu - Jadwal Shalat",
-  "description": "Plugin VSCode untuk menampilkan jadwal shalat dan notifikasi saat waktu adzan tiba oleh KalenderQu.",
-  "version": "1.0.1",
+  "description": "Exstensi VSCode untuk menampilkan jadwal shalat dan notifikasi saat waktu adzan tiba oleh KalenderQu.",
+  "version": "1.0.2",
   "publisher": "KalenderQu",
   "icon": "media/image/icon.png",
   "repository": {
@@ -23,7 +23,7 @@
         "kalenderqu_adzan.city": {
           "type": "string",
           "default": "KOTA BANDUNG",
-          "description": "Nama kota untuk jadwal ahalat"
+          "description": "Nama kota untuk jadwal shalat"
         },
         "kalenderqu_adzan.lat": {
           "type": "number",
@@ -49,6 +49,11 @@
           "type": "boolean",
           "default": true,
           "description": "Putar suara adzan pendek saat waktu shalat tiba"
+        },
+        "kalenderqu_adzan.hisab": {
+          "type": "string",
+          "default": "umum",
+          "description": "Pilihan hisab"
         }
       }
     },

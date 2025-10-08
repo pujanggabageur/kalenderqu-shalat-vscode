@@ -667,6 +667,7 @@ class Islam {
       latitude: number = -6.9128,
       longitude = 107.6206,
       timezone: number = 7,
+      mode: string = 'umum',
       altitude: number = 10,
       Shubuh: number = 20,
       Dhuha: number = 4.5,
@@ -676,6 +677,21 @@ class Islam {
       Isya: number = 18,
       Imsak: number = 10,
   ) {
+
+    let maghrib = 0;
+    let syuruq = 0;
+
+    switch (mode) {
+      case 'muhammadiyah':
+        Shubuh = 18;
+        syuruq = -3;
+        break;
+      case 'kemenag':
+        maghrib = 4;
+        syuruq = -7;
+        break;
+    }
+
     const DIP = (1.76 / 60) * Math.sqrt(altitude);
     const JamDeklinasiGMT = 5;
     const PI = 3.141592653589793;
@@ -732,11 +748,11 @@ class Islam {
 
     const rIMSAK = ceiling(lImsak / 24, 0.5 / 24 / 60) + Ihtiyat / 24 / 60;
     const rSHUBUH = ceiling(lShubuh / 24, 0.5 / 24 / 60) + Ihtiyat / 24 / 60;
-    const rSYURUQ = ceiling(lSyuruq / 24, 0.5 / 24 / 60) ;// lSyuruq / 24 - Ihtiyat / 24 / 60;
+    const rSYURUQ = ceiling(lSyuruq / 24, 0.5 / 24 / 60) + (syuruq / 24 / 60);
     const rDHUHA = ceiling(lDhuha / 24, 0.5 / 24 / 60) + Ihtiyat / 24 / 60;
     const rDHUHUR = ceiling(lDhuhur / 24, 0.5 / 24 / 60) + Dhuhur / 24 / 60;
     const rASHAR = ceiling(lAshar / 24, 0.5 / 24 / 60) + Ihtiyat / 24 / 60;
-    const rMAGHRIB = ceiling(lMaghrib / 24, 0.5 / 24 / 60) + Ihtiyat / 24 / 60;
+    const rMAGHRIB = ceiling(lMaghrib / 24, 0.5 / 24 / 60) + (Ihtiyat / 24 / 60) + (maghrib / 24 / 60);
     const rISYA = ceiling(lIsya / 24, 0.5 / 24 / 60) + Ihtiyat / 24 / 60;
 
     const dateCalc = formatReadDate(dYear, dMonth, dDay);
@@ -768,7 +784,8 @@ class Islam {
       ashar: roundTime(tASHAR),
       maghrib: roundTime(tMAGHRIB),
       isya: roundTime(tISYA),
-      // isya: '21:41:00',
+      // maghrib: '21:23:00',
+      // isya: '21:25:00',
     };
     return result;
   }

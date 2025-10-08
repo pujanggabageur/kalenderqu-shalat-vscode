@@ -1,4 +1,4 @@
-# 🕋 Changelog — KalenderQu Adzan
+# 🕋 Changelog — KalenderQu - Jadwal Shalat
 
 Semua perubahan penting pada ekstensi **KalenderQu Adzan** akan didokumentasikan di sini.
 
@@ -35,5 +35,9 @@ Kunjungi: [https://kalenderqu.com](https://kalenderqu.com)
 - Perubahan dan perbaikan pada halaman utama
 - Perubahan deskripsi
 - Perubahan nama pada Setting
+
+## [1.0.2] — 2025-10-08
+- Penambahan pengaturan pilihan metode hisab, yaitu: Umum, PP Muhammadiyah, dan Kementrian Agama RI
+
 
 **© 2025 KalenderQu.com — Dirancang oleh Agung Novian**

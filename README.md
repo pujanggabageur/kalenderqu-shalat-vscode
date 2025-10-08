@@ -1,6 +1,6 @@
 # 🕌 KalenderQu Adzan
 
-**KalenderQu Adzan** adalah ekstensi Visual Studio Code yang menampilkan **jadwal shalat harian** berdasarkan lokasi pengguna dan memberikan **notifikasi otomatis saat masuk waktu shalat**, lengkap dengan **suara adzan**.  
+**KalenderQu Jadwal Shalat** adalah ekstensi Visual Studio Code yang menampilkan **jadwal shalat harian** berdasarkan lokasi pengguna dan memberikan **notifikasi otomatis saat masuk waktu shalat**, lengkap dengan **suara adzan**.  
 Didesain agar pengembang Muslim dapat tetap fokus bekerja tanpa melewatkan waktu ibadah.
 
 ---
@@ -52,7 +52,7 @@ Buka `Settings` → ketik **KalenderQu Adzan**, atau edit langsung di `settings.
 Exkstensi ini tidak menggunakan koneksi internet untuk mengambil data jadwal shalat atupun kalender Hijriah. Alih-alih menggunakan API pihak ketiga, kami membuat perhitungan otomatis sendiri untuk keperluan jadwal shalat, kalender Hijriyah, dan daftar kota.
 
 ## Situs Web
-[KalenderQu.Com]([kalenderqu-url])
+[KalenderQu.Com](https://kalenderqu.com)
 
 ## Pengembang
 [Agung Novian](mailto:pujanggabageur@gmail.com)
@@ -63,5 +63,3 @@ Exkstensi ini tidak menggunakan koneksi internet untuk mengambil data jadwal sha
 
 Bank:
 **BCA**: 8105216927
-
-[kalenderqu-url]: https://kalenderqu.com

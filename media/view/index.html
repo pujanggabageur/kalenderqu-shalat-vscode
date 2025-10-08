@@ -1,198 +1,220 @@
 <!DOCTYPE html>
-  <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jadwal Shalat Hari Ini</title>
-    <style>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jadwal Shalat Hari Ini</title>
+  <style>
       body {
-        font-family: sans-serif;
-        padding: 16px;
-        color: #ddd;
-        background-color: #1e1e1e;
+          font-family: sans-serif;
+          padding: 16px;
+          color: #ddd;
+          background-color: #1e1e1e;
       }
       h2 { color: #4fc3f7; }
-      input[type="text"] {
-        width: 100%;
-        padding: 8px;
-        margin: 8px 0;
-        border-radius: 4px;
-        border: 1px solid #555;
-        background: #2d2d2d;
-        color: white;
+      input[type="text"], select {
+          width: 99%;
+          padding: 8px;
+          margin: 8px 0;
+          border-radius: 4px;
+          border: 1px solid #555;
+          background: #2d2d2d;
+          color: white;
       }
       table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 16px;
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 16px;
       }
       th, td {
-        border: 1px solid #444;
-        padding: 6px;
-        text-align: center;
+          border: 1px solid #444;
+          padding: 6px;
+          text-align: center;
       }
       th {
-        background: #333;
-        color: #4fc3f7;
+          background: #333;
+          color: #4fc3f7;
       }
       tr:nth-child(even) { background: #2a2a2a; }
       tr:hover { background: #333; }
       button {
-        background-color: #007acc;
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 4px;
-        cursor: pointer;
+          background-color: #007acc;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
       }
       button:hover { background-color: #005fa3; }
       .city-list {
-        max-height: 250px;
-        overflow-y: auto;
-        margin-top: 8px;
-        border: 1px solid #444;
+          max-height: 250px;
+          overflow-y: auto;
+          margin-top: 8px;
+          border: 1px solid #444;
       }
       .city-item {
-        padding: 6px 10px;
-        cursor: pointer;
+          padding: 6px 10px;
+          cursor: pointer;
       }
       .city-item:hover {
-        background: #333;
+          background: #333;
       }
       .footer {
-        margin-top: 20px;
+          margin-top: 20px;
       }
-    </style>
-  </head>
-  <body>
-    <h2 id="pageTitle">KalenderQu - Jadwal Shalat</h2>
-    <audio id="adzanPlayer" src="${soundUri}" preload="auto"></audio>
-    <button id="playBtn">🔊 Tes Suara Adzan</button>
-    <p>
-      Hasil ini dibuat berdasarkan metode perhitungan astronomis,
-      dengan sudut matahari untuk Shubuh 20° dan sudut matahari untuk Isya 18°,
-      dengan ketinggian matahari 10°,
-      disertai penambahan ihtiyat 4 menit untuk Dzuhur dan 2 menit untuk waktu shalat lainnya.
-    </p>
-    <div id="citySelector" style="display: block;">
-      <label for="cityInput">Nama Kota</label>
-      <input type="text" id="cityInput" placeholder="Ketik nama kota atau kabupaten..." />
-      <div class="city-list" id="cityList"></div>
-    </div>
-    
-    <div id="dateContainer">
-      <h3 id="cityName"></h3>
-      <table>
-        <thead>
-          <tr>
-            <td>Masehi</td>
-            <td>Hijriyah</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td width="50%" id="masehi-date"></td>
-            <td width="50%" id="hijri-date"></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  </style>
+</head>
+<body>
+<h2 id="pageTitle">KalenderQu - Jadwal Shalat</h2>
+<audio id="adzanPlayer" src="${soundUri}" preload="auto"></audio>
+<button id="playBtn">🔊 Tes Suara Adzan</button>
+<p>
+  Hasil ini dibuat berdasarkan metode perhitungan astronomis,
+  dengan sudut matahari untuk Shubuh 20° dan sudut matahari untuk Isya 18°,
+  dengan ketinggian matahari 10°,
+  disertai penambahan ihtiyat 4 menit untuk Dzuhur dan 2 menit untuk waktu shalat lainnya.
+</p>
 
-    <div id="jadwalContainer" style="display: none;">
-      <table>
-        <tbody id="jadwalTable"></tbody>
-      </table>
-      <div style="margin-top:16px;">
-        <button id="ubahKotaBtn">Ubah Kota</button>
-      </div>
-    </div>
+<!-- Pilihan Kota -->
+<div id="citySelector" style="display: block;">
+  <label for="cityInput">Nama Kota</label>
+  <input type="text" id="cityInput" placeholder="Ketik nama kota atau kabupaten..." />
+  <div class="city-list" id="cityList"></div>
+</div>
 
-    <div class="footer">
-      Dipersembahkan oleh: <a href="https://kalenderqu.com" target="_blank">KalenderQu</a>
-    </div>
+<div id="dateContainer">
+  <h3 id="cityName"></h3>
+  <table>
+    <thead>
+    <tr>
+      <td>Masehi</td>
+      <td>Hijriyah</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td width="50%" id="masehi-date"></td>
+      <td width="50%" id="hijri-date"></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
 
-    <script>
-      const vscode = acquireVsCodeApi();
-      let allCities = [];
-      const currentCity = "${currentCity}";
+<div id="jadwalContainer" style="display: none;">
+  <table>
+    <tbody id="jadwalTable"></tbody>
+  </table>
+  <div style="margin-top:16px;">
+    <button id="ubahKotaBtn">Ubah Kota</button>
+  </div>
+</div>
 
-      const adzanPlayer = document.getElementById('adzanPlayer');
-      const btnPlay = document.getElementById('playBtn');
-      const input = document.getElementById('cityInput');
-      const list = document.getElementById('cityList');
+<div style="margin-top:16px;">
+  <!-- Pilihan Hisab -->
+  <label for="hisabSelect">Metode Hisab</label>
+  <select id="hisabSelect">
+    <option value="umum">Umum</option>
+    <option value="muhammadiyah">PP Muhammadiyah</option>
+    <option value="kemenag">Kementerian Agama RI</option>
+  </select>
+</div>
 
-      vscode.postMessage({ command: 'loadCities' });
-      if (currentCity) vscode.postMessage({ command: 'loadSavedCity', city: currentCity });
+<div class="footer">
+  Dipersembahkan oleh: <a href="https://kalenderqu.com" target="_blank">KalenderQu</a>
+</div>
 
-      window.addEventListener('message', (event) => {
-        const message = event.data;
-        switch (message.command) {
-          case 'showCities':
-            allCities = message.cities;
-            break;
-          case 'showTimes':
-            showJadwal(message.imsakiyah, message.city);
-            break;
-          case 'showDates':
-            showDate(message.dates);
-            break;
-          case 'playAdzan':
-            adzanPlayer.currentTime = 0;
-            adzanPlayer.play();
-            break;
-        }
-      });
+<script>
+  const vscode = acquireVsCodeApi();
+  let allCities = [];
+  const currentCity = "${currentCity}";
+  const adzanPlayer = document.getElementById('adzanPlayer');
+  const btnPlay = document.getElementById('playBtn');
+  const input = document.getElementById('cityInput');
+  const list = document.getElementById('cityList');
+  const hisabSelect = document.getElementById('hisabSelect');
+  hisabSelect.value = "${currentHisab}";
 
-      btnPlay.onclick = () => {
+  vscode.postMessage({ command: 'loadCities' });
+  if (currentCity) vscode.postMessage({ command: 'loadSavedCity', city: currentCity });
+
+  window.addEventListener('message', (event) => {
+    const message = event.data;
+    switch (message.command) {
+      case 'showCities':
+        allCities = message.cities;
+        break;
+      case 'showTimes':
+        showJadwal(message.imsakiyah, message.city);
+        break;
+      case 'showDates':
+        showDate(message.dates);
+        break;
+      case 'playAdzan':
+        adzanPlayer.currentTime = 0;
         adzanPlayer.play();
-        btnPlay.textContent = '✅ Suara Aktif';
-      };
+        break;
+    }
+  });
 
-      if (input) {
-        input.addEventListener('input', () => {
-          const q = input.value.toLowerCase();
-          list.innerHTML = '';
-          if (!q) return;
-          const filtered = allCities.filter(c => c.name.toLowerCase().includes(q));
-          filtered.slice(0, 30).forEach(c => {
-            const div = document.createElement('div');
-            div.className = 'city-item';
-            div.textContent = c.name;
-            div.onclick = () => selectCity(c);
-            list.appendChild(div);
-          });
-        });
-      }
+  btnPlay.onclick = () => {
+    adzanPlayer.play();
+    btnPlay.textContent = '✅ Suara Aktif';
+  };
 
-      function selectCity(c) {
-        vscode.postMessage({ command: 'saveCity', city: c });
-      }
+  // Filter kota
+  input.addEventListener('input', () => {
+    const q = input.value.toLowerCase();
+    list.innerHTML = '';
+    if (!q) return;
+    const filtered = allCities.filter(c => c.name.toLowerCase().includes(q));
+    filtered.slice(0, 30).forEach(c => {
+      const div = document.createElement('div');
+      div.className = 'city-item';
+      div.textContent = c.name;
+      div.onclick = () => selectCity(c);
+      list.appendChild(div);
+    });
+  });
 
-      function showJadwal(imsakiyah, city) {
-        // document.getElementById('pageTitle').textContent = 'KalenderQu - Jadwal Shalat';
-        document.getElementById('citySelector').style.display = 'none';
-        document.getElementById('jadwalContainer').style.display = 'block';
-        document.getElementById('cityName').textContent = city;
-        const tbody = document.getElementById('jadwalTable');
-        tbody.innerHTML = '';
-        for (const [key, value] of Object.entries(imsakiyah)) {
-          const tr = document.createElement('tr');
-          const waktu = key.charAt(0).toUpperCase() + key.slice(1);
-          tr.innerHTML = '<td>' + waktu + '</td width="50%"><td>' + value + '</td>';
-          tbody.appendChild(tr);
-        }
-      }
+  // Ganti kota
+  function selectCity(c) {
+    vscode.postMessage({
+      command: 'saveCity',
+      city: c,
+    });
+  }
 
-      function showDate(dates) {
-        document.getElementById('masehi-date').textContent = dates.masehi;
-        document.getElementById('hijri-date').textContent = dates.hijriyah;
-      }
+  // Ganti metode hisab
+  hisabSelect.addEventListener('change', () => {
+    vscode.postMessage({
+      command: 'changeHisab',
+      hisab: hisabSelect.value
+    });
+  });
 
-      document.getElementById('ubahKotaBtn').onclick = () => {
-        // document.getElementById('pageTitle').textContent = 'Pilih Kota untuk Jadwal Adzan';
-        document.getElementById('citySelector').style.display = 'block';
-        document.getElementById('jadwalContainer').style.display = 'none';
-      };
-    </script>
-  </body>
-  </html>
+  function showJadwal(imsakiyah, city) {
+    document.getElementById('citySelector').style.display = 'none';
+    document.getElementById('jadwalContainer').style.display = 'block';
+    document.getElementById('cityName').textContent = city;
+    const tbody = document.getElementById('jadwalTable');
+    tbody.innerHTML = '';
+    for (const [key, value] of Object.entries(imsakiyah)) {
+      const tr = document.createElement('tr');
+      const waktu = key.charAt(0).toUpperCase() + key.slice(1);
+      tr.innerHTML = `<td>${waktu}</td><td>${value}</td>`;
+      tbody.appendChild(tr);
+    }
+  }
+
+  function showDate(dates) {
+    document.getElementById('masehi-date').textContent = dates.masehi;
+    document.getElementById('hijri-date').textContent = dates.hijriyah;
+  }
+
+  document.getElementById('ubahKotaBtn').onclick = () => {
+    document.getElementById('citySelector').style.display = 'block';
+    document.getElementById('jadwalContainer').style.display = 'none';
+  };
+</script>
+</body>
+</html>
